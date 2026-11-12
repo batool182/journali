@@ -1,9 +1,9 @@
 import SwiftUI
 
-@main struct MyApp: App {
+@main struct journaliApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainPage()
         }
     }
 }
