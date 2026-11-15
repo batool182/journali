@@ -7,7 +7,7 @@ enum SortOption {
 }
 
 struct MainPage: View {
-    
+    @FocusState private var isSearchFocused: Bool
     @StateObject private var viewModel = JournalViewModel()
     // النص اللي يكتبه المستخدم في البحث
     @State private var searchText = ""
@@ -43,10 +43,10 @@ struct MainPage: View {
         if sortOption == .bookmark {
             // البوكمارك أولاً
             result = result.sorted { first, second in
-                if first.isBookmarked == true && second.isBookmarked == false {
-                    return true
+                if first.isBookmarked != second.isBookmarked {
+                    return first.isBookmarked
                 }
-                return false
+                return first.date > second.date
             }
         } else {
             // الأحدث أولاً
@@ -108,7 +108,11 @@ struct MainPage: View {
                     // مسافة تحت عشان آخر بطاقة ما تختفي ورا شريط البحث
                     .padding(.bottom, 100)
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
+        }
+        .onTapGesture {
+            isSearchFocused = false
         }
         // شريط البحث يطفو فوق كل شي في أسفل الشاشة
         .overlay(alignment: .bottom) {
@@ -122,8 +126,7 @@ struct MainPage: View {
             }
         }
         .sheet(item: $entryToEdit) { entry in
-            JournalEditorView(title: entry.title, body: entry.body) { newTitle, newBody in
-                // ننسخ اليومية ونغير العنوان والنص فقط
+            JournalEditorView(title: entry.title, body: entry.body, date: entry.date) { newTitle, newBody in
                 var updatedEntry = entry
                 updatedEntry.title = newTitle
                 updatedEntry.body = newBody
@@ -148,6 +151,7 @@ struct MainPage: View {
     }
 
     // العنوان والأزرار (نفس المرحلة 1)
+    // العنوان وأزرار الترتيب والإضافة
     private var header: some View {
         HStack {
             Text("Journal")
@@ -156,39 +160,37 @@ struct MainPage: View {
 
             Spacer()
 
-            HStack(spacing: 20) {
-                Button {
-                    // الفلتر: نسويه لاحقاً
-                } label: {
-                    Menu {
-                        Button("Sort by Bookmark") {
-                            sortOption = .bookmark
-                        }
-
-                        Button("Sort by Entry Date") {
-                            sortOption = .date
-                        }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease")
+            HStack(spacing: 8) {
+                Menu {
+                    Button("Sort by Bookmark") {
+                        sortOption = .bookmark
                     }
+
+                    Button("Sort by Entry Date") {
+                        sortOption = .date
+                    }
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(Color.primaryText)
+                        .frame(width: 44, height: 44)
                 }
 
                 Button {
-                    // نظهر شاشة الإضافة
                     showEditor = true
                 } label: {
                     Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(Color.primaryText)
+                        .frame(width: 44, height: 44)
                 }
             }
-            .font(.system(size: 20, weight: .medium))
-            .foregroundStyle(Color.primaryText)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
-            .background(Color.cardBackground, in: Capsule())
+            .padding(.horizontal, 8)
+            .glassEffect(.regular, in: Capsule())
         }
         .padding(.top, 8)
     }
-
+     
     // شريط البحث
     private var searchBar: some View {
         HStack(spacing: 12) {
@@ -199,6 +201,7 @@ struct MainPage: View {
             // خانة الكتابة، مربوطة بالمتغير searchText
             TextField("Search", text: $searchText)
                 .foregroundStyle(Color.primaryText)
+                .focused($isSearchFocused)
 
             // أيقونة المايك
             Image(systemName: "mic")
@@ -207,12 +210,17 @@ struct MainPage: View {
         .font(.system(size: 18))
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(Color.cardBackground, in: Capsule())
-    }
+        .glassEffect(.regular, in: Capsule())    }
 
     // شاشة "ما في يوميات"
     private var emptyState: some View {
         VStack(spacing: 12) {
+            Image("EmptyBook")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 150)
+                .padding(.bottom, 12)
+
             Text("Begin Your Journal")
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(Color.accentPurple)

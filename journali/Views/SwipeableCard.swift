@@ -95,15 +95,4 @@ struct SwipeableCard: View {
     }
 }
 
-#Preview {
-    ZStack {
-        Color.appBackground.ignoresSafeArea()
-        SwipeableCard(
-            entry: JournalEntry.samples[0],
-            onBookmarkTap: { },
-            onDeleteTap: { },
-            onCardTap: { }
-        )
-        .padding(.horizontal, 20)
-    }
-}
+

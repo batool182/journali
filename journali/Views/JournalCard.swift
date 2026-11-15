@@ -39,10 +39,4 @@ struct JournalCard: View {
     }
 }
 
-#Preview {
-    ZStack {
-        Color.appBackground.ignoresSafeArea()
-        JournalCard(entry: JournalEntry.samples[0])
-            .padding(.horizontal, 20)
-    }
-}
+

@@ -15,16 +15,18 @@ struct JournalEditorView: View {
     // القيم الأصلية، نقارن فيها لنعرف لو صار تغيير
     private let originalTitle: String
     private let originalBody: String
+    private let date: Date
 
     // الكود اللي ينفذ لما يضغط المستخدم زر الحفظ
     var onSave: (String, String) -> Void
 
     // نستقبل العنوان والنص الأصلي (فاضيين لو يومية جديدة)
-    init(title: String = "", body: String = "", onSave: @escaping (String, String) -> Void) {
+    init(title: String = "", body: String = "", date: Date = .now, onSave: @escaping (String, String) -> Void) {
         _title = State(initialValue: title)
         _bodyText = State(initialValue: body)
         originalTitle = title
         originalBody = body
+        self.date = date
         self.onSave = onSave
     }
 
@@ -50,7 +52,7 @@ struct JournalEditorView: View {
                     .font(.system(size: 34, weight: .bold))
                     .foregroundStyle(Color.primaryText)
 
-                Text(Date.now, format: .dateTime.day(.twoDigits).month(.twoDigits).year())
+                Text(date, format: .dateTime.day(.twoDigits).month(.twoDigits).year())
                     .font(.system(size: 16))
                     .foregroundStyle(Color.secondaryText)
 
@@ -73,10 +75,8 @@ struct JournalEditorView: View {
             // زر الإغلاق X
             Button {
                 if hasChanges {
-                    // في تغييرات: نسأل المستخدم
                     showDiscardDialog = true
                 } else {
-                    // ما في تغييرات: نقفل مباشرة
                     dismiss()
                 }
             } label: {
@@ -86,16 +86,10 @@ struct JournalEditorView: View {
                     .frame(width: 44, height: 44)
                     .background(Color.appBackground, in: Circle())
             }
-            // الرسالة تظهر ملتصقة بزر X
-            .confirmationDialog(
-                "Are you sure you want to discard changes on this journal?",
-                isPresented: $showDiscardDialog,
-                titleVisibility: .visible
-            ) {
-                Button("Discard Changes", role: .destructive) {
-                    dismiss()
-                }
-                Button("Keep Editing", role: .cancel) { }
+            .popover(isPresented: $showDiscardDialog, arrowEdge: .top) {
+                discardCard
+                    .presentationCompactAdaptation(.popover)
+                    .presentationBackground(Color(white: 0.09))
             }
 
             Spacer()
@@ -112,6 +106,43 @@ struct JournalEditorView: View {
                     .background(Color.primaryAccent, in: Circle())
             }
         }
+    }
+
+    // كرت التأكيد اللي يظهر لما تضغط X
+    private var discardCard: some View {
+        VStack(spacing: 14) {
+            Text("Are you sure you want to discard changes on this journal?")
+                .font(.system(size: 18))
+                .foregroundStyle(Color.secondaryText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                showDiscardDialog = false
+                dismiss()
+            } label: {
+                Text("Discard Changes")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(Color.white.opacity(0.12), in: Capsule())
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                showDiscardDialog = false
+            } label: {
+                Text("Keep Editing")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(Color.primaryText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(Color.white.opacity(0.12), in: Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(24)
+        .frame(width: 320)
     }
 }
 

@@ -3,8 +3,7 @@ import Combine
 
 
 class JournalViewModel: ObservableObject {
-    @Published var entries: [JournalEntry] = JournalEntry.samples
-
+    @Published var entries: [JournalEntry] = []
     func add(title: String, body: String) {
         let newEntry = JournalEntry(title: title, date: .now, body: body)
         entries.insert(newEntry, at: 0)
