@@ -60,6 +60,16 @@ struct JournalEditorView: View {
                     .font(.system(size: 20))
                     .foregroundStyle(Color.primaryText)
                     .scrollContentBackground(.hidden)
+                    .overlay(alignment: .topLeading) {
+                        if bodyText.isEmpty {
+                            Text("Type your Journal...")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Color.secondaryText.opacity(0.6))
+                                .padding(.top, 8)
+                                .padding(.leading, 5)
+                                .allowsHitTesting(false)
+                        }
+                    }
 
                 Spacer()
             }
@@ -84,8 +94,9 @@ struct JournalEditorView: View {
                     .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(Color.primaryText)
                     .frame(width: 44, height: 44)
-                    .background(Color.appBackground, in: Circle())
             }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
             .popover(isPresented: $showDiscardDialog, arrowEdge: .top) {
                 discardCard
                     .presentationCompactAdaptation(.popover)
@@ -103,8 +114,10 @@ struct JournalEditorView: View {
                     .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(Color.appBackground)
                     .frame(width: 44, height: 44)
-                    .background(Color.primaryAccent, in: Circle())
             }
+            .buttonStyle(.glassProminent)
+            .buttonBorderShape(.circle)
+            .tint(Color.primaryAccent)
         }
     }
 
@@ -124,10 +137,10 @@ struct JournalEditorView: View {
                     .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(.red)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(Color.white.opacity(0.12), in: Capsule())
+                    .padding(.vertical, 10)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
+            .buttonBorderShape(.capsule)
 
             Button {
                 showDiscardDialog = false
@@ -136,10 +149,10 @@ struct JournalEditorView: View {
                     .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(Color.primaryText)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(Color.white.opacity(0.12), in: Capsule())
+                    .padding(.vertical, 10)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
+            .buttonBorderShape(.capsule)
         }
         .padding(24)
         .frame(width: 320)

@@ -1,9 +1,9 @@
 import SwiftUI
 
 // خيارات الترتيب
-enum SortOption {
-    case bookmark
-    case date
+enum SortOption: String, CaseIterable {
+    case bookmark = "Sort by Bookmark"
+    case date = "Sort by Entry Date"
 }
 
 struct MainPage: View {
@@ -21,7 +21,7 @@ struct MainPage: View {
     @State private var entryToDelete: JournalEntry?
     // هل نعرض رسالة الحذف؟
     @State private var showDeleteAlert = false
-    
+
     // القائمة اللي تظهر للمستخدم بعد البحث والترتيب
     private var displayedEntries: [JournalEntry] {
 
@@ -150,7 +150,6 @@ struct MainPage: View {
         }
     }
 
-    // العنوان والأزرار (نفس المرحلة 1)
     // العنوان وأزرار الترتيب والإضافة
     private var header: some View {
         HStack {
@@ -162,12 +161,11 @@ struct MainPage: View {
 
             HStack(spacing: 8) {
                 Menu {
-                    Button("Sort by Bookmark") {
-                        sortOption = .bookmark
-                    }
-
-                    Button("Sort by Entry Date") {
-                        sortOption = .date
+                    // زر لكل حالة في الـ enum
+                    ForEach(SortOption.allCases, id: \.self) { option in
+                        Button(option.rawValue) {
+                            sortOption = option
+                        }
                     }
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
@@ -190,7 +188,7 @@ struct MainPage: View {
         }
         .padding(.top, 8)
     }
-     
+
     // شريط البحث
     private var searchBar: some View {
         HStack(spacing: 12) {
@@ -202,15 +200,12 @@ struct MainPage: View {
             TextField("Search", text: $searchText)
                 .foregroundStyle(Color.primaryText)
                 .focused($isSearchFocused)
-
-            // أيقونة المايك
-            Image(systemName: "mic")
-                .foregroundStyle(Color.secondaryText)
         }
         .font(.system(size: 18))
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .glassEffect(.regular, in: Capsule())    }
+        .glassEffect(.regular, in: Capsule())
+    }
 
     // شاشة "ما في يوميات"
     private var emptyState: some View {
