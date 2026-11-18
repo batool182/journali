@@ -72,7 +72,7 @@ To run on a real device, select your Apple ID team under Signing & Capabilities 
 
 <p align="center">
   <a href="https://github.com/batool182">
-    <img src="https://github.com/USERNAME.png" width="100" style="border-radius:50%" alt="Batool Alkhudaydi" />
+    <img src="https://github.com/batool182.png" width="100" style="border-radius:50%" alt="Batool Alkhudaydi" />
   </a>
   <br />
   <b>Batool Alkhudaydi</b>
