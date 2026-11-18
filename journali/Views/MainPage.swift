@@ -1,5 +1,5 @@
 import SwiftUI
-import SwiftData   // 👈 جديد
+import SwiftData
 
 // خيارات الترتيب
 enum SortOption: String, CaseIterable {
@@ -8,7 +8,7 @@ enum SortOption: String, CaseIterable {
 }
 
 struct MainPage: View {
-    @Environment(\.modelContext) private var context   // 👈 جديد
+    @Environment(\.modelContext) private var context
     @FocusState private var isSearchFocused: Bool
     @StateObject private var viewModel = JournalViewModel()
     // النص اللي يكتبه المستخدم في البحث
@@ -23,24 +23,24 @@ struct MainPage: View {
     @State private var entryToDelete: JournalEntry?
     // هل نعرض رسالة الحذف؟
     @State private var showDeleteAlert = false
-
+    
     // القائمة اللي تظهر للمستخدم بعد البحث والترتيب
     private var displayedEntries: [JournalEntry] {
-
+        
         // نبدأ بكل اليوميات
         var result = viewModel.entries
-
+        
         // أولاً: البحث
         if searchText.isEmpty == false {
             let searchWord = searchText.lowercased()
-
+            
             result = result.filter { entry in
                 let titleMatches = entry.title.lowercased().contains(searchWord)
                 let bodyMatches = entry.body.lowercased().contains(searchWord)
                 return titleMatches || bodyMatches
             }
         }
-
+        
         // ثانياً: الترتيب
         if sortOption == .bookmark {
             // البوكمارك أولاً
@@ -56,14 +56,14 @@ struct MainPage: View {
                 return first.date > second.date
             }
         }
-
+        
         return result
     }
-
+    
     var body: some View {
         ZStack {
             Color.appBackground.ignoresSafeArea()
-
+            
             // لو ما في يوميات نعرض الـ Empty State
             if viewModel.entries.isEmpty {
                 VStack(alignment: .leading, spacing: 24) {
@@ -78,7 +78,7 @@ struct MainPage: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         header
-
+                        
                         LazyVStack(spacing: 16) {
                             ForEach(displayedEntries) { entry in
                                 SwipeableCard(
@@ -154,16 +154,16 @@ struct MainPage: View {
             Text("Are you sure you want to delete this journal?")
         }
     }
-
+    
     // العنوان وأزرار الترتيب والإضافة
     private var header: some View {
         HStack {
             Text("Journal")
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(Color.primaryText)
-
+            
             Spacer()
-
+            
             HStack(spacing: 8) {
                 Menu {
                     // زر لكل حالة في الـ enum
@@ -178,7 +178,7 @@ struct MainPage: View {
                         .foregroundStyle(Color.primaryText)
                         .frame(width: 44, height: 44)
                 }
-
+                
                 Button {
                     showEditor = true
                 } label: {
@@ -193,14 +193,14 @@ struct MainPage: View {
         }
         .padding(.top, 8)
     }
-
+    
     // شريط البحث
     private var searchBar: some View {
         HStack(spacing: 12) {
             // أيقونة العدسة
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(Color.secondaryText)
-
+            
             // خانة الكتابة، مربوطة بالمتغير searchText
             TextField("Search", text: $searchText)
                 .foregroundStyle(Color.primaryText)
@@ -211,7 +211,7 @@ struct MainPage: View {
         .padding(.vertical, 14)
         .glassEffect(.regular, in: Capsule())
     }
-
+    
     // شاشة "ما في يوميات"
     private var emptyState: some View {
         VStack(spacing: 12) {
@@ -220,11 +220,11 @@ struct MainPage: View {
                 .scaledToFit()
                 .frame(width: 150)
                 .padding(.bottom, 12)
-
+            
             Text("Begin Your Journal")
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(Color.accentPurple)
-
+            
             Text("Craft your personal diary, tap the plus icon to begin")
                 .font(.system(size: 18))
                 .foregroundStyle(Color.primaryText)
