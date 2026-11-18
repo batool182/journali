@@ -1,4 +1,4 @@
-# Journali
+# Journali - Journaling App
 Journali is a personal journaling app for iPhone, built with SwiftUI. Write, edit, bookmark, search, and sort your journal entries. Your thoughts, your story.
 
 ## Features
