@@ -40,6 +40,10 @@ struct JournalEditorView: View {
         }
         return false
     }
+    // هل كتب المستخدم شي؟
+    private var canSave: Bool {
+        title.isEmpty == false || bodyText.isEmpty == false
+    }
 
     var body: some View {
         ZStack {
@@ -118,6 +122,10 @@ struct JournalEditorView: View {
             .buttonStyle(.glassProminent)
             .buttonBorderShape(.circle)
             .tint(Color.primaryAccent)
+            .buttonStyle(.glassProminent)
+            .buttonBorderShape(.circle)
+            .tint(Color.primaryAccent)
+            .disabled(canSave == false)
         }
     }
 

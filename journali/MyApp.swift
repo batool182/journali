@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct MyApp: App {
@@ -27,5 +28,6 @@ struct MyApp: App {
                 }
             }
         }
+        .modelContainer(for: JournalEntry.self)    
     }
 }

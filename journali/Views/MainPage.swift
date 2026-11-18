@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData   // 👈 جديد
 
 // خيارات الترتيب
 enum SortOption: String, CaseIterable {
@@ -7,6 +8,7 @@ enum SortOption: String, CaseIterable {
 }
 
 struct MainPage: View {
+    @Environment(\.modelContext) private var context   // 👈 جديد
     @FocusState private var isSearchFocused: Bool
     @StateObject private var viewModel = JournalViewModel()
     // النص اللي يكتبه المستخدم في البحث
@@ -114,6 +116,11 @@ struct MainPage: View {
         .onTapGesture {
             isSearchFocused = false
         }
+        // 👈 جديد: نمرر الـ context للـ ViewModel
+        .onAppear {
+            viewModel.context = context
+            viewModel.fetch()
+        }
         // شريط البحث يطفو فوق كل شي في أسفل الشاشة
         .overlay(alignment: .bottom) {
             searchBar
@@ -126,11 +133,9 @@ struct MainPage: View {
             }
         }
         .sheet(item: $entryToEdit) { entry in
+            // 👈 تغيّر: التعديل يمر عبر الـ ViewModel
             JournalEditorView(title: entry.title, body: entry.body, date: entry.date) { newTitle, newBody in
-                var updatedEntry = entry
-                updatedEntry.title = newTitle
-                updatedEntry.body = newBody
-                viewModel.update(updatedEntry)
+                viewModel.update(entry, title: newTitle, body: newBody)
             }
         }
         .alert("Delete Journal?", isPresented: $showDeleteAlert) {

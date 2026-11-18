@@ -1,55 +1,35 @@
 import SwiftUI
+import SwiftData
 import Combine
 
 class JournalViewModel: ObservableObject {
 
-    // مفتاح الحفظ
-    private let saveKey = "savedEntries"
+    var context: ModelContext!
 
-    // كل ما تتغير القائمة نحفظها تلقائياً
-    @Published var entries: [JournalEntry] = [] {
-        didSet {
-            save()
-        }
-    }
+    @Published var entries: [JournalEntry] = []
 
-    // أول ما ينشأ الـ ViewModel نحمّل اليوميات المحفوظة
-    init() {
-        load()
+    func fetch() {
+        entries = (try? context.fetch(FetchDescriptor<JournalEntry>())) ?? []
     }
 
     func add(title: String, body: String) {
-        let newEntry = JournalEntry(title: title, date: .now, body: body)
-        entries.insert(newEntry, at: 0)
+        context.insert(JournalEntry(title: title, body: body))
+        fetch()
     }
 
-    func update(_ entry: JournalEntry) {
-        guard let index = entries.firstIndex(where: { $0.id == entry.id }) else { return }
-        entries[index] = entry
+    func update(_ entry: JournalEntry, title: String, body: String) {
+        entry.title = title
+        entry.body = body
+        fetch()
     }
 
     func delete(_ entry: JournalEntry) {
-        entries.removeAll { $0.id == entry.id }
+        context.delete(entry)
+        fetch()
     }
 
     func toggleBookmark(_ entry: JournalEntry) {
-        guard let index = entries.firstIndex(where: { $0.id == entry.id }) else { return }
-        entries[index].isBookmarked.toggle()
-    }
-
-    // تحويل القائمة إلى JSON وحفظها
-    private func save() {
-        if let data = try? JSONEncoder().encode(entries) {
-            UserDefaults.standard.set(data, forKey: saveKey)
-        }
-    }
-
-    // قراءة JSON المحفوظ وتحويله إلى قائمة
-    private func load() {
-        guard let data = UserDefaults.standard.data(forKey: saveKey),
-              let saved = try? JSONDecoder().decode([JournalEntry].self, from: data) else {
-            return
-        }
-        entries = saved
+        entry.isBookmarked.toggle()
+        fetch()
     }
 }
