@@ -59,9 +59,7 @@ journali
 ## How to Run
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/journali.git
-   ```
+   git clone https://github.com/batool182/journali.git
 2. Open `journali.xcodeproj` in Xcode.
 3. Choose a simulator or a connected iPhone.
 4. Press `Cmd + R`.
